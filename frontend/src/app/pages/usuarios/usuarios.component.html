@@ -2,9 +2,9 @@
   <app-sidebar></app-sidebar>
 
   <main class="main-content" [class.collapsed]="sidebarService.isCollapsed()">
-    <header class="page-header">
+    <app-header>
       <h1 class="page-title">Usuários</h1>
-    </header>
+    </app-header>
 
     <div class="content-body">
       <!-- Barra superior de ações (Busca e Botão Cadastrar) -->
@@ -227,9 +227,11 @@
 ></app-popup-confirmacao>
 
 <!-- Toast de Notificação -->
-<app-notificacao
-  [title]="notificationTitle"
-  [message]="notificationMessage"
-  [type]="notificationType"
-  (dismiss)="notificationMessage = ''"
-></app-notificacao>
+@if (notificationService.notification(); as notif) {
+  <app-notificacao
+    [title]="notif.title"
+    [message]="notif.message"
+    [type]="notif.type"
+    (dismiss)="notificationService.dismiss()"
+  ></app-notificacao>
+}

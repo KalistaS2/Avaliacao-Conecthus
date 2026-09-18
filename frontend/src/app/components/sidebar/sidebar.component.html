@@ -33,24 +33,4 @@
       }
     </a>
   </nav>
-
-  <div class="sidebar-footer">
-    @if (authService.currentUser(); as user) {
-      <div class="user-info" [attr.title]="sidebarService.isCollapsed() ? user.name + ' (' + user.email + ')' : null">
-        <div class="avatar">{{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}</div>
-        @if (!sidebarService.isCollapsed()) {
-          <div class="user-details">
-            <span class="user-name">{{ user.name }}</span>
-            <span class="user-email">{{ user.email }}</span>
-          </div>
-        }
-      </div>
-    }
-    <button (click)="onLogout()" class="logout-btn" [attr.title]="sidebarService.isCollapsed() ? 'Sair do sistema' : null">
-      <span class="material-symbols-outlined icon">logout</span>
-      @if (!sidebarService.isCollapsed()) {
-        <span>Sair</span>
-      }
-    </button>
-  </div>
 </aside>

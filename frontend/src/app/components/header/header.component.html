@@ -1,0 +1,47 @@
+<header class="app-header-container">
+  <div class="header-left">
+    <ng-content></ng-content>
+  </div>
+
+  <div class="header-right">
+    @if (authService.currentUser(); as user) {
+      <div class="profile-dropdown-wrapper">
+        <button
+          type="button"
+          class="profile-trigger-btn"
+          (click)="toggleDropdown($event)"
+          [attr.aria-expanded]="isDropdownOpen"
+          title="Menu de perfil"
+        >
+          <div class="avatar-badge">
+            {{ getUserInitials(user.name) }}
+          </div>
+          <span class="material-symbols-outlined chevron-icon">
+            {{ isDropdownOpen ? 'expand_less' : 'expand_more' }}
+          </span>
+        </button>
+
+        @if (isDropdownOpen) {
+          <div class="profile-dropdown-menu">
+            <div class="user-info-section">
+              <div class="dropdown-avatar">
+                {{ getUserInitials(user.name) }}
+              </div>
+              <div class="dropdown-text">
+                <span class="dropdown-name">{{ user.name }}</span>
+                <span class="dropdown-email">{{ user.email }}</span>
+              </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <button type="button" class="logout-btn" (click)="onLogout()">
+              <span class="material-symbols-outlined icon">logout</span>
+              <span>Sair</span>
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</header>

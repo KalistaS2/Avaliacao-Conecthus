@@ -4,38 +4,7 @@
   background-color: #0b192c;
   overflow: hidden;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-/* Splash Screen */
-.splash-screen {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-.logo-text {
-  font-size: 3.5rem;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -1px;
-}
-
-.splash-logo {
-  max-width: 320px;
-  height: auto;
-}
-
-.brand-logo-large {
-  max-width: 280px;
-  height: auto;
-}
-
-.logo-text .dot {
-  color: #00adb5;
+  position: relative;
 }
 
 /* Login Main Content */
@@ -51,6 +20,15 @@
   align-items: center;
   justify-content: center;
   background-color: #0b192c;
+  position: relative;
+  z-index: 2;
+}
+
+.brand-logo-large {
+  max-width: 280px;
+  height: auto;
+  will-change: transform, opacity;
+  animation: logoMoveFromCenter 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .right-card {
@@ -60,6 +38,9 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  z-index: 1;
+  will-change: transform, opacity;
+  animation: cardSlideFromRight 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .card-inner {
@@ -164,11 +145,42 @@
   to { transform: rotate(360deg); }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Animations for Desktop */
+@keyframes logoMoveFromCenter {
+  0% {
+    opacity: 0;
+    transform: translateX(25vw) scale(1.05);
+  }
+  25% {
+    opacity: 1;
+    transform: translateX(25vw) scale(1.05);
+  }
+  45% {
+    opacity: 1;
+    transform: translateX(25vw) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
 }
 
+@keyframes cardSlideFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100vw);
+  }
+  40% {
+    opacity: 0;
+    transform: translateX(100vw);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Mobile Responsive */
 @media (max-width: 768px) {
   .login-content {
     flex-direction: column;
@@ -176,4 +188,45 @@
   .left-brand {
     padding: 3rem 1rem 1rem 1rem;
   }
+  .brand-logo-large {
+    animation: logoMoveFromCenterMobile 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .right-card {
+    animation: cardSlideFromRightMobile 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
 }
+
+@keyframes logoMoveFromCenterMobile {
+  0% {
+    opacity: 0;
+    transform: translateY(25vh) scale(1.05);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(25vh) scale(1.05);
+  }
+  45% {
+    opacity: 1;
+    transform: translateY(25vh) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cardSlideFromRightMobile {
+  0% {
+    opacity: 0;
+    transform: translateX(100vw);
+  }
+  40% {
+    opacity: 0;
+    transform: translateX(100vw);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+

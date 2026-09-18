@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { HeaderComponent } from '../../components/header/header.component';
 import { PopupConfirmacaoComponent } from '../../components/popup-confirmacao/popup-confirmacao.component';
 import { NotificacaoComponent } from '../../components/notificacao/notificacao.component';
 import { UserService } from '../../api/user.service';
 import { SidebarService } from '../../api/sidebar.service';
+import { NotificationService } from '../../api/notification.service';
 
 /**
  * Componente da página de Cadastro e Edição de Usuários com validações de formulário.
@@ -19,6 +21,7 @@ import { SidebarService } from '../../api/sidebar.service';
     ReactiveFormsModule,
     RouterLink,
     SidebarComponent,
+    HeaderComponent,
     PopupConfirmacaoComponent,
     NotificacaoComponent,
   ],
@@ -41,20 +44,18 @@ export class CadastroUsuarioComponent implements OnInit {
   /** Controle de exibição da modal de confirmação de cancelamento */
   public isCancelModalOpen: boolean = false;
 
-  /** Título de notificação */
-  public notificationTitle: string = '';
+  /** Controla a visibilidade do campo de senha */
+  public showPassword: boolean = false;
 
-  /** Mensagem de toast para notificação */
-  public notificationMessage: string = '';
-
-  /** Tipo de notificação (success, error, info, warning) */
-  public notificationType: 'success' | 'error' | 'info' | 'warning' = 'success';
+  /** Controla a visibilidade do campo de repetição de senha */
+  public showRepeatPassword: boolean = false;
 
   /**
    * Construtor da CadastroUsuarioComponent.
    * @param fb FormBuilder do Angular para construção de formulários reativos.
    * @param userService Serviço de operações com a API de Usuários.
    * @param sidebarService Serviço do estado da sidebar retrátil.
+   * @param notificationService Serviço global de notificações/toasts.
    * @param router Roteador do Angular.
    * @param route Rota ativa para leitura de parâmetros de URL.
    * @param cdr Detector de mudanças do Angular.
@@ -63,6 +64,7 @@ export class CadastroUsuarioComponent implements OnInit {
     private readonly fb: FormBuilder,
     private readonly userService: UserService,
     public readonly sidebarService: SidebarService,
+    public readonly notificationService: NotificationService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly cdr: ChangeDetectorRef,
@@ -84,12 +86,6 @@ export class CadastroUsuarioComponent implements OnInit {
     });
   }
 
-  /** Controla a visibilidade do campo de senha */
-  public showPassword: boolean = false;
-
-  /** Controla a visibilidade do campo de repetição de senha */
-  public showRepeatPassword: boolean = false;
-
   /**
    * Alterna a visibilidade da senha no campo de texto.
    * @returns Void
@@ -107,12 +103,35 @@ export class CadastroUsuarioComponent implements OnInit {
   }
 
   /**
-   * Inicializa o formulário com as regras de validação estritas exigidas:
-   * 1. Nome: Apenas Letras
-   * 2. Email: Formato de e-mail válido
-   * 3. Matrícula: Apenas Números
-   * 4. Senha: Alfanumérico
-   * 5. Todos obrigatórios.
+   * Restringe a entrada do campo Nome para permitir apenas letras e espaços.
+   * Sanitiza reativamente no FormControl do formulário.
+   * @param event Evento de entrada de texto.
+   * @returns Void
+   */
+  public onNameInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const sanitized = input.value.replace(/[^a-zA-ZÀ-ÖØ-öø-ÿ\s]/g, '');
+    if (input.value !== sanitized) {
+      this.userForm.get('name')?.setValue(sanitized);
+    }
+  }
+
+  /**
+   * Restringe a entrada do campo Matrícula para permitir apenas números.
+   * Sanitiza reativamente no FormControl do formulário.
+   * @param event Evento de entrada de texto.
+   * @returns Void
+   */
+  public onRegistrationNumberInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const sanitized = input.value.replace(/\D/g, '');
+    if (input.value !== sanitized) {
+      this.userForm.get('registrationNumber')?.setValue(sanitized);
+    }
+  }
+
+  /**
+   * Inicializa o formulário com as regras de validação estritas exigidas.
    * @returns Void
    */
   private initForm(): void {
@@ -192,7 +211,7 @@ export class CadastroUsuarioComponent implements OnInit {
       },
       error: () => {
         this.isLoading = false;
-        this.showNotification('Erro ao carregar dados do usuário.', 'error');
+        this.notificationService.show('Erro ao carregar dados do usuário.', 'error');
         this.cdr.markForCheck();
         this.router.navigate(['/usuarios']);
       },
@@ -206,7 +225,11 @@ export class CadastroUsuarioComponent implements OnInit {
   public onSubmit(): void {
     if (this.userForm.invalid) {
       this.userForm.markAllAsTouched();
-      this.showNotification('Preencha os campos obrigatórios corretamente antes de enviar.', 'error', 'Erro no Formulário');
+      this.notificationService.show(
+        'Preencha os campos obrigatórios corretamente antes de enviar.',
+        'error',
+        'Erro no Formulário'
+      );
       return;
     }
 
@@ -226,7 +249,11 @@ export class CadastroUsuarioComponent implements OnInit {
         error: (err) => {
           this.isLoading = false;
           const msg = err?.error?.message || 'Erro ao atualizar usuário.';
-          this.showNotification(Array.isArray(msg) ? msg[0] : msg, 'error', 'Erro na Atualização');
+          this.notificationService.show(
+            Array.isArray(msg) ? msg[0] : msg,
+            'error',
+            'Erro na Atualização'
+          );
           this.cdr.markForCheck();
         },
       });
@@ -242,7 +269,11 @@ export class CadastroUsuarioComponent implements OnInit {
         error: (err) => {
           this.isLoading = false;
           const msg = err?.error?.message || 'Erro ao cadastrar usuário.';
-          this.showNotification(Array.isArray(msg) ? msg[0] : msg, 'error', 'Erro no Cadastro');
+          this.notificationService.show(
+            Array.isArray(msg) ? msg[0] : msg,
+            'error',
+            'Erro no Cadastro'
+          );
           this.cdr.markForCheck();
         },
       });
@@ -275,28 +306,5 @@ export class CadastroUsuarioComponent implements OnInit {
     this.router.navigate(['/usuarios'], {
       queryParams: { message: msg, type: 'warning' },
     });
-  }
-
-  /**
-   * Exibe a mensagem de feedback via Toast.
-   * @param message Texto do alerta.
-   * @param type Tipo da notificação (success, error, info, warning).
-   * @param title Título opcional do alerta.
-   * @returns Void
-   */
-  public showNotification(
-    message: string,
-    type: 'success' | 'error' | 'info' | 'warning' = 'success',
-    title: string = ''
-  ): void {
-    this.notificationMessage = message;
-    this.notificationType = type;
-    this.notificationTitle = title || (type === 'error' ? 'Erro' : (type === 'warning' ? 'Atenção' : (type === 'info' ? 'Informação' : 'Sucesso')));
-    this.cdr.markForCheck();
-    setTimeout(() => {
-      this.notificationMessage = '';
-      this.notificationTitle = '';
-      this.cdr.markForCheck();
-    }, 4000);
   }
 }

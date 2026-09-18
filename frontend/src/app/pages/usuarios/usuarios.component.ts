@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { HeaderComponent } from '../../components/header/header.component';
 import { PopupComponent } from '../../components/popup/popup.component';
 import { PopupConfirmacaoComponent } from '../../components/popup-confirmacao/popup-confirmacao.component';
 import { NotificacaoComponent } from '../../components/notificacao/notificacao.component';
 import { UserService } from '../../api/user.service';
 import { SidebarService } from '../../api/sidebar.service';
 import { AuthService } from '../../api/auth.service';
+import { NotificationService, NotificationType } from '../../api/notification.service';
 import { User } from '../../api/models';
 
 /**
@@ -22,6 +24,7 @@ import { User } from '../../api/models';
     FormsModule,
     RouterLink,
     SidebarComponent,
+    HeaderComponent,
     PopupComponent,
     PopupConfirmacaoComponent,
     NotificacaoComponent,
@@ -63,20 +66,12 @@ export class UsuariosComponent implements OnInit {
   /** Controle de exibição do popup de confirmação de exclusão */
   public isDeleteModalOpen: boolean = false;
 
-  /** Título do toast de notificação do usuário */
-  public notificationTitle: string = '';
-
-  /** Mensagem de toast para notificação do usuário */
-  public notificationMessage: string = '';
-
-  /** Tipo da notificação (success, error, info, warning) */
-  public notificationType: 'success' | 'error' | 'info' | 'warning' = 'success';
-
   /**
    * Construtor da UsuariosComponent.
    * @param userService Serviço de requisições de usuários.
    * @param sidebarService Serviço do estado da sidebar retrátil.
    * @param authService Serviço de autenticação e sessão do usuário.
+   * @param notificationService Serviço global de notificações/toasts.
    * @param router Roteador do Angular.
    * @param route Rota ativa para leitura de parâmetros de URL.
    * @param cdr Detector de mudanças do Angular.
@@ -85,10 +80,11 @@ export class UsuariosComponent implements OnInit {
     private readonly userService: UserService,
     public readonly sidebarService: SidebarService,
     private readonly authService: AuthService,
+    public readonly notificationService: NotificationService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly cdr: ChangeDetectorRef,
-  ) { }
+  ) {}
 
   /**
    * Lifecycle hook inicial executado ao carregar a página.
@@ -99,9 +95,9 @@ export class UsuariosComponent implements OnInit {
     this.loadUsers();
     this.route.queryParams.subscribe((params) => {
       if (params['message']) {
-        const type = (params['type'] as 'success' | 'error' | 'info' | 'warning') || 'success';
+        const type = (params['type'] as NotificationType) || 'success';
         const title = params['title'] || '';
-        this.showNotification(params['message'], type, title);
+        this.notificationService.show(params['message'], type, title);
       }
     });
   }
@@ -124,7 +120,7 @@ export class UsuariosComponent implements OnInit {
       },
       error: () => {
         this.isLoading = false;
-        this.showNotification('Erro ao carregar lista de usuários.', 'error');
+        this.notificationService.show('Erro ao carregar lista de usuários.', 'error');
         this.cdr.markForCheck();
       },
     });
@@ -147,7 +143,7 @@ export class UsuariosComponent implements OnInit {
   public onPageSizeChange(): void {
     this.currentPage = 1;
     this.loadUsers();
-    this.showNotification(`Exibindo ${this.pageSize} itens por página`, 'info');
+    this.notificationService.show(`Exibindo ${this.pageSize} itens por página`, 'info');
   }
 
   /**
@@ -160,7 +156,7 @@ export class UsuariosComponent implements OnInit {
     if (page < 1 || page > this.totalPages || page === this.currentPage) return;
     this.currentPage = page;
     this.loadUsers();
-    this.showNotification(`Página ${page} de ${this.totalPages}`, 'info');
+    this.notificationService.show(`Página ${page} de ${this.totalPages}`, 'info');
   }
 
   /**
@@ -256,10 +252,8 @@ export class UsuariosComponent implements OnInit {
     this.isDeleteModalOpen = false;
 
     if (isSelfDelete) {
-      // 1. Realiza logout primeiro
       this.authService.logout();
 
-      // 2. Exclui o usuário no banco
       this.userService.deleteUser(userToDelete.id).subscribe({
         next: () => {
           this.userToDelete = null;
@@ -277,13 +271,13 @@ export class UsuariosComponent implements OnInit {
     } else {
       this.userService.deleteUser(userToDelete.id).subscribe({
         next: () => {
-          this.showNotification('Usuário excluído com sucesso!', 'success');
+          this.notificationService.show('Usuário excluído com sucesso!', 'success');
           this.userToDelete = null;
           this.loadUsers();
           this.cdr.markForCheck();
         },
         error: () => {
-          this.showNotification('Erro ao excluir usuário.', 'error');
+          this.notificationService.show('Erro ao excluir usuário.', 'error');
           this.userToDelete = null;
           this.cdr.markForCheck();
         },
@@ -320,28 +314,5 @@ export class UsuariosComponent implements OnInit {
       return 'Nenhuma';
     }
     return this.formatDate(updatedStr);
-  }
-
-  /**
-   * Exibe o banner de notificação temporário na tela.
-   * @param message Texto do alerta.
-   * @param type Tipo visual (success, error, info, warning).
-   * @param title Título opcional do alerta.
-   * @returns Void
-   */
-  public showNotification(
-    message: string,
-    type: 'success' | 'error' | 'info' | 'warning' = 'success',
-    title: string = ''
-  ): void {
-    this.notificationMessage = message;
-    this.notificationType = type;
-    this.notificationTitle = title || (type === 'error' ? 'Erro' : (type === 'warning' ? 'Atenção' : (type === 'info' ? 'Informação' : 'Sucesso')));
-    this.cdr.markForCheck();
-    setTimeout(() => {
-      this.notificationMessage = '';
-      this.notificationTitle = '';
-      this.cdr.markForCheck();
-    }, 4000);
   }
 }

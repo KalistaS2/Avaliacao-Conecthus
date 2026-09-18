@@ -2,9 +2,9 @@
   <app-sidebar></app-sidebar>
 
   <main class="main-content" [class.collapsed]="sidebarService.isCollapsed()">
-    <header class="page-header">
+    <app-header>
       <h1 class="page-title">Home</h1>
-    </header>
+    </app-header>
 
     <div class="content-body">
       <div class="welcome-header">
@@ -32,9 +32,11 @@
 </div>
 
 <!-- Toast de Notificação -->
-<app-notificacao
-  [title]="notificationTitle"
-  [message]="notificationMessage"
-  [type]="notificationType"
-  (dismiss)="notificationMessage = ''"
-></app-notificacao>
+@if (notificationService.notification(); as notif) {
+  <app-notificacao
+    [title]="notif.title"
+    [message]="notif.message"
+    [type]="notif.type"
+    (dismiss)="notificationService.dismiss()"
+  ></app-notificacao>
+}

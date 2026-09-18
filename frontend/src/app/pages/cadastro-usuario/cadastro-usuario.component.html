@@ -2,7 +2,7 @@
   <app-sidebar></app-sidebar>
 
   <main class="main-content" [class.collapsed]="sidebarService.isCollapsed()">
-    <header class="page-header">
+    <app-header>
       <div class="breadcrumb">
         <a routerLink="/usuarios" class="breadcrumb-link">Usuários</a>
         <span class="breadcrumb-separator">&gt;</span>
@@ -12,7 +12,7 @@
       <a routerLink="/usuarios" class="btn-back" title="Voltar para Usuários">
         Voltar
       </a>
-    </header>
+    </app-header>
 
     <div class="content-body">
       <div class="form-card">
@@ -28,6 +28,7 @@
             <div class="form-group">
               <label for="name">Insira o nome completo*</label>
               <input type="text" id="name" formControlName="name" placeholder="Insira o nome completo"
+                (input)="onNameInput($event)"
                 [class.invalid]="userForm.get('name')?.invalid && userForm.get('name')?.touched" />
               @if (userForm.get('name')?.hasError('required') && userForm.get('name')?.touched) {
               <span class="error-text">O nome é obrigatório.</span>
@@ -42,6 +43,7 @@
               <label for="registrationNumber">Insira o nº da matrícula*</label>
               <input type="text" id="registrationNumber" formControlName="registrationNumber"
                 placeholder="Insira o nº da matrícula"
+                (input)="onRegistrationNumberInput($event)"
                 [class.invalid]="userForm.get('registrationNumber')?.invalid && userForm.get('registrationNumber')?.touched" />
               @if (userForm.get('registrationNumber')?.hasError('required') &&
               userForm.get('registrationNumber')?.touched) {
@@ -149,5 +151,7 @@
   (confirm)="confirmCancel()"></app-popup-confirmacao>
 
 <!-- Toast de Notificação -->
-<app-notificacao [title]="notificationTitle" [message]="notificationMessage" [type]="notificationType"
-  (dismiss)="notificationMessage = ''"></app-notificacao>
+@if (notificationService.notification(); as notif) {
+  <app-notificacao [title]="notif.title" [message]="notif.message" [type]="notif.type"
+    (dismiss)="notificationService.dismiss()"></app-notificacao>
+}

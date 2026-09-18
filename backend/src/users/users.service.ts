@@ -164,11 +164,13 @@ export class UsersService implements OnApplicationBootstrap {
       }
     }
 
-    if (updateUserDto.password) {
-      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+    const updateData: Partial<User> = { ...updateUserDto };
+
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
     }
 
-    Object.assign(user, updateUserDto);
+    Object.assign(user, updateData);
     return await this.userRepository.save(user);
   }
 
