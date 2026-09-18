@@ -4,6 +4,8 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginDto } from './dto/login.dto';
+import { AuthResponseDto } from './dto/auth-response.dto';
+import { PaginatedUsersResponseDto } from './dto/paginated-users.dto';
 import { User } from './entities/user.entity';
 
 /**
@@ -25,7 +27,7 @@ export class UsersController {
    */
   @Post('auth/login')
   @ApiOperation({ summary: 'Autenticar usuário', description: 'Realiza o login via E-mail ou Matrícula e Senha.' })
-  @ApiResponse({ status: 200, description: 'Login efetuado com sucesso.' })
+  @ApiResponse({ status: 200, description: 'Login efetuado com sucesso.', type: AuthResponseDto })
   @ApiResponse({ status: 401, description: 'Credenciais inválidas.' })
   async login(@Body() loginDto: LoginDto): Promise<{ user: Partial<User>; token: string }> {
     return await this.usersService.login(loginDto);
@@ -57,7 +59,7 @@ export class UsersController {
   @ApiQuery({ name: 'search', required: false, description: 'Filtrar por nome' })
   @ApiQuery({ name: 'page', required: false, description: 'Número da página', example: 1 })
   @ApiQuery({ name: 'limit', required: false, description: 'Itens por página', example: 10 })
-  @ApiResponse({ status: 200, description: 'Lista de usuários recuperada com sucesso.' })
+  @ApiResponse({ status: 200, description: 'Lista de usuários recuperada com sucesso.', type: PaginatedUsersResponseDto })
   async findAll(
     @Query('search') search?: string,
     @Query('page') page?: string,
