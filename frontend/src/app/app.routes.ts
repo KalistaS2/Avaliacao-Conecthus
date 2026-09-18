@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
+import { RecuperarSenhaComponent } from './pages/recuperar-senha/recuperar-senha.component';
 import { HomeComponent } from './pages/home/home.component';
 import { UsuariosComponent } from './pages/usuarios/usuarios.component';
 import { CadastroUsuarioComponent } from './pages/cadastro-usuario/cadastro-usuario.component';
@@ -16,6 +17,12 @@ export const routes: Routes = [
     component: LoginComponent,
     canActivate: [guestGuard],
     title: 'Conecthus - Autenticação',
+  },
+  {
+    path: 'recuperar-senha',
+    component: RecuperarSenhaComponent,
+    canActivate: [guestGuard],
+    title: 'Conecthus - Recuperação de Senha',
   },
   {
     path: 'home',

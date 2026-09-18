@@ -22,6 +22,7 @@
   background-color: #0b192c;
   position: relative;
   z-index: 2;
+  padding: 2rem;
 }
 
 .brand-logo-large {
@@ -29,6 +30,21 @@
   height: auto;
   will-change: transform, opacity;
   animation: logoMoveFromCenter 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.padlock-illustration {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: logoFadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.padlock-svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 25px rgba(0, 173, 181, 0.2));
 }
 
 .right-card {
@@ -52,6 +68,17 @@
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
+.brand-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.card-logo {
+  height: 40px;
+  width: auto;
+}
+
 .card-inner h2 {
   margin: 0;
   font-size: 1.75rem;
@@ -59,10 +86,15 @@
   color: #0f172a;
 }
 
+.card-inner h2.title-cyan {
+  color: #00888f;
+}
+
 .card-inner .subtitle {
   color: #64748b;
   font-size: 0.95rem;
   margin: 0.35rem 0 1.75rem 0;
+  line-height: 1.4;
 }
 
 .error-alert {
@@ -87,10 +119,31 @@
   gap: 0.4rem;
 }
 
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .form-group label {
   font-size: 0.85rem;
   font-weight: 600;
   color: #334155;
+}
+
+.forgot-link-btn {
+  background: none;
+  border: none;
+  color: #00adb5;
+  font-size: 0.825rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+    color: #00888f;
+  }
 }
 
 .form-group input {
@@ -107,7 +160,8 @@
   box-shadow: 0 0 0 3px rgba(0, 173, 181, 0.15);
 }
 
-.submit-btn {
+.submit-btn,
+.submit-btn-cyan {
   margin-top: 0.5rem;
   padding: 0.85rem;
   background-color: #00adb5;
@@ -123,13 +177,38 @@
   justify-content: center;
 }
 
-.submit-btn:hover:not(:disabled) {
+.submit-btn:hover:not(:disabled),
+.submit-btn-cyan:hover:not(:disabled) {
   background-color: #00888f;
 }
 
-.submit-btn:disabled {
+.submit-btn:disabled,
+.submit-btn-cyan:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.back-link-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.back-link-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #00adb5;
+  }
 }
 
 .spinner {
@@ -142,7 +221,168 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Modal Popup de Envio de E-mail Não Implementado */
+.popup-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(11, 25, 44, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.popup-container {
+  background: #ffffff;
+  border-radius: 16px;
+  max-width: 480px;
+  width: 100%;
+  padding: 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  position: relative;
+  animation: popupSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.popup-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #0f172a;
+  }
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.popup-icon-warning {
+  font-size: 1.75rem;
+}
+
+.popup-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.popup-description {
+  color: #475569;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+}
+
+.popup-link-box {
+  background-color: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 0.85rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.link-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.direct-reset-link {
+  color: #00adb5;
+  word-break: break-all;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.popup-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.btn-primary-action {
+  padding: 0.65rem 1.25rem;
+  background-color: #00adb5;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #00888f;
+  }
+}
+
+.btn-secondary-action {
+  padding: 0.65rem 1.25rem;
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #e2e8f0;
+  }
+}
+
+@keyframes popupSlideIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes logoFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Animations for Desktop */
@@ -151,14 +391,17 @@
     opacity: 0;
     transform: translateX(25vw) scale(1.05);
   }
+
   25% {
     opacity: 1;
     transform: translateX(25vw) scale(1.05);
   }
+
   45% {
     opacity: 1;
     transform: translateX(25vw) scale(1.05);
   }
+
   100% {
     opacity: 1;
     transform: translateX(0) scale(1);
@@ -170,10 +413,12 @@
     opacity: 0;
     transform: translateX(100vw);
   }
+
   40% {
     opacity: 0;
     transform: translateX(100vw);
   }
+
   100% {
     opacity: 1;
     transform: translateX(0);
@@ -185,12 +430,15 @@
   .login-content {
     flex-direction: column;
   }
+
   .left-brand {
     padding: 3rem 1rem 1rem 1rem;
   }
+
   .brand-logo-large {
     animation: logoMoveFromCenterMobile 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
+
   .right-card {
     animation: cardSlideFromRightMobile 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
@@ -201,14 +449,17 @@
     opacity: 0;
     transform: translateY(25vh) scale(1.05);
   }
+
   25% {
     opacity: 1;
     transform: translateY(25vh) scale(1.05);
   }
+
   45% {
     opacity: 1;
     transform: translateY(25vh) scale(1.05);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -220,13 +471,14 @@
     opacity: 0;
     transform: translateX(100vw);
   }
+
   40% {
     opacity: 0;
     transform: translateX(100vw);
   }
+
   100% {
     opacity: 1;
     transform: translateX(0);
   }
 }
-

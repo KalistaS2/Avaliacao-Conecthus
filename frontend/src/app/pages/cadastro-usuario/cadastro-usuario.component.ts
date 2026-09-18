@@ -163,7 +163,8 @@ export class CadastroUsuarioComponent implements OnInit {
           [
             Validators.required,
             Validators.minLength(6),
-            Validators.pattern(/^[a-zA-Z0-9]+$/),
+            Validators.maxLength(6),
+            Validators.pattern(/^[a-zA-Z0-9]{6}$/),
           ],
         ],
         repeatPassword: [
@@ -171,6 +172,7 @@ export class CadastroUsuarioComponent implements OnInit {
           [
             Validators.required,
             Validators.minLength(6),
+            Validators.maxLength(6),
           ],
         ],
       },

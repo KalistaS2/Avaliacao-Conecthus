@@ -21,7 +21,7 @@ O projeto segue rigorosamente uma arquitetura modular, limpa e padronizada:
 ```text
 frontend/src/app/
 ├── api/                           # Serviços HTTP de integração e Gerenciadores de Estado
-│   ├── auth.service.ts            # Gerenciamento de sessão, login/logout e localStorage
+│   ├── auth.service.ts            # Gerenciamento de sessão, login/logout, recuperação e localStorage
 │   ├── user.service.ts            # Consumo da API RESTful de usuários (/users)
 │   ├── notification.service.ts    # Serviço reativo global de Toasts/Notificações (Signals)
 │   ├── sidebar.service.ts         # Controle reativo global do estado recolhido/expandido da Sidebar
@@ -33,9 +33,10 @@ frontend/src/app/
 │   ├── popup-confirmacao/         # Modal de confirmação para exclusão e cancelamentos
 │   └── notificacao/               # Banner Toast de feedback visual (Sucesso, Erro, Info, Alerta)
 ├── guards/                        # Route Guards funcionais do Angular
-│   └── auth.guard.ts              # Proteção de rotas privadas (authGuard) e rota pública (guestGuard)
+│   └── auth.guard.ts              # Proteção de rotas privadas (authGuard) e rotas públicas (guestGuard)
 ├── pages/                         # Páginas/Views principais da aplicação
-│   ├── login/                     # Tela de autenticação por E-mail ou Matrícula
+│   ├── login/                     # Tela de autenticação e fluxo de Esqueci minha senha
+│   ├── recuperar-senha/           # Tela de redefinição de nova senha do usuário
 │   ├── home/                      # Painel inicial / Dashboard com mensagem personalizada
 │   ├── usuarios/                  # Tabela de usuários, pesquisa por nome, paginação e ações
 │   └── cadastro-usuario/          # Formulário reativo de cadastro e edição de usuários
@@ -51,51 +52,50 @@ frontend/src/app/
 
 ## 🎨 Componentes Reutilizáveis (`/components`)
 
-- **`HeaderComponent`**: Barra superior fixa presente em todas as páginas privadas. Exibe o nome da seção ativa, um badge circular com as iniciais do usuário logado (ex: "MS" para Milena Santana) e um menu dropdown de perfil com acionamento para encerramento de sessão (Logout). Possui detecção de clique fora do componente (*click-outside listener*) para fechamento automático.
-- **`SidebarComponent`**: Barra de navegação lateral retrátil. Integra-se ao `SidebarService` usando Angular Signals. Altera dinamicamente entre a logo completa e o ícone simplificado durante a animação de expansão (300ms), com botões de atalho para Home, Usuários, Cadastro e Sair.
-- **`PopupComponent`**: Modal flutuante elegante para exibição detalhada de todos os campos de um usuário selecionado (ID, Nome, E-mail, Matrícula, Data de Criação e Última Atualização).
-- **`PopupConfirmacaoComponent`**: Modal de confirmação reutilizável com tratamento de ações críticas (como confirmação de exclusão de usuários ou descarte de alterações no formulário).
-- **`NotificacaoComponent`**: Toast reativo de alertas visuais posicionado no canto da tela. Suporta 4 estilos (`success`, `error`, `info`, `warning`) com temporizador de auto-dismiss inteligente e sem vazamento de memória.
+- **`HeaderComponent`**: Barra superior fixa presente em todas as páginas privadas. Exibe o nome da seção ativa, um badge circular com as iniciais do usuário logado (ex: "MS" para Milena Santana) e um menu dropdown de perfil com acionamento para encerramento de sessão (Logout).
+- **`SidebarComponent`**: Barra de navegação lateral retrátil com animação fluida e transição de logo.
+- **`PopupComponent`**: Modal flutuante elegante para exibição detalhada dos campos do usuário.
+- **`PopupConfirmacaoComponent`**: Modal de confirmação reutilizável com tratamento de ações críticas.
+- **`NotificacaoComponent`**: Toast reativo de alertas visuais posicionado no canto da tela com temporizador inteligente.
 
 ---
 
 ## 🔒 Guardas de Rota (`/guards`)
 
 - **`authGuard`**: Impede o acesso de usuários não autenticados a páginas restritas (`/home`, `/usuarios`, `/cadastro-usuario`), redirecionando-os para a página de login com mensagem de aviso.
-- **`guestGuard`**: Impede que usuários já logados acessem a página de `/login`, redirecionando-os automaticamente para o painel inicial (`/home`).
+- **`guestGuard`**: Impede que usuários já logados acessem a página de `/login` ou `/recuperar-senha`, redirecionando-os automaticamente para o painel inicial (`/home`).
 
 ---
 
 ## 📄 Páginas da Aplicação (`/pages`)
 
 1. **`LoginComponent` (`/login`)**:
-   - Tela de apresentação institucional da Conecthus com formulário de autenticação.
-   - Permite autenticação por **E-mail** ou **Matrícula** e **Senha**.
-   - Redireciona automaticamente para o dashboard (`/home`) ao efetuar login com sucesso.
+   - Tela de apresentação institucional da Conecthus com formulário de autenticação por **E-mail** ou **Matrícula** e **Senha**.
+   - **Fluxo "Esqueci minha senha"**:
+     - Botão integrado no formulário de login para alternar para a tela de solicitação de e-mail.
+     - Validação do e-mail digitado no backend (`POST /auth/forgot-password`).
+     - Exibição do modal Popup estilizado em caso de sucesso:
+       - **Título**: `feature de envio de e-mail não implementada.`
+       - **Descrição**: `acesso a pagina de recuperação de senha do usuario {matricula}.`
+       - **Ação**: Botão e link direto para direcionar o usuário à tela de redefinição de senha (`/recuperar-senha`).
 
-2. **`HomeComponent` (`/home`)**:
+2. **`RecuperarSenhaComponent` (`/recuperar-senha`)**:
+   - Tela dedicada de redefinição de senha utilizando o mesmo layout visual da tela de login (ilustração do cadeado no lado esquerdo e card com formulário no lado direito).
+   - Exibe a matrícula do usuário a ser atualizado.
+   - Formulário com campos **Nova Senha** e **Confirmar Nova Senha**:
+     - Botões para mostrar/ocultar senha.
+     - Validação de formato alfanumérico com no mínimo 6 dígitos.
+     - Validador de igualdade entre senha e confirmação (`passwordMatchValidator`).
+   - Atualiza a senha no banco via `POST /auth/reset-password` e redireciona para a tela de login com toast de confirmação.
+
+3. **`HomeComponent` (`/home`)**:
    - Dashboard principal com saudação personalizada utilizando o primeiro nome do usuário logado.
-   - Exibe a data atual formatada em português.
-   - Cards de acesso rápido para navegação direta para a lista ou cadastro de novos usuários.
 
-3. **`UsuariosComponent` (`/usuarios`)**:
-   - Tabela de dados moderna para gerenciamento completo dos usuários.
-   - **Pesquisa em tempo real**: Filtro instantâneo por nome.
-   - **Controle de Paginação**: Seletor dinâmico de quantidade de itens por página (ex: 5, 10, 20) e navegação entre páginas.
-   - **Ações**:
-     - *Visualizar*: Abre a modal `PopupComponent` com dados completos.
-     - *Editar*: Redireciona para o formulário `/cadastro-usuario?id=X`.
-     - *Excluir*: Dispara a modal `PopupConfirmacaoComponent`. Caso o usuário logado exclua seu próprio perfil, a sessão é encerrada de forma segura e o usuário é redirecionado à página de login.
+4. **`UsuariosComponent` (`/usuarios`)**:
+   - Tabela de dados para gerenciamento completo dos usuários com pesquisa por nome, paginação e ações.
 
-4. **`CadastroUsuarioComponent` (`/cadastro-usuario`)**:
-   - Formulário unificado para **Criação** e **Edição** de usuários.
-   - **Validações Reativas Estritas**:
-     - **Nome**: Apenas letras e espaços (higienização em tempo de digitação via regex).
-     - **E-mail**: Formato de e-mail válido.
-     - **Matrícula**: Apenas números (higienização em tempo de digitação via regex).
-     - **Senha**: Mínimo de 6 caracteres alfanuméricos com controle de ocultar/exibir texto.
-     - **Confirmar Senha**: Validador customizado (`passwordMatchValidator`) exigindo igualdade perfeita com a senha informada.
-   - **Cancelamento Seguro**: Botão de cancelar aciona modal de confirmação antes de descartar dados preenchidos.
+5. **`CadastroUsuarioComponent` (`/cadastro-usuario`)**:
+   - Formulário unificado para criação e edição de usuários com validações estritas.
 
 ---
 

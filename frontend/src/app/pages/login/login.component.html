@@ -1,64 +1,123 @@
 <div class="login-wrapper">
   @if (notificationService.notification(); as notif) {
-    <app-notificacao
-      [title]="notif.title"
-      [message]="notif.message"
-      [type]="notif.type"
-      (dismiss)="notificationService.dismiss()"
-    ></app-notificacao>
+  <app-notificacao [title]="notif.title" [message]="notif.message" [type]="notif.type"
+    (dismiss)="notificationService.dismiss()"></app-notificacao>
   }
 
-  <!-- Tela de Login Principal com Animação de Entrada -->
+  <!-- Modal Popup para aviso de Envio de E-mail não implementado -->
+  @if (isPopupOpen) {
+  <div class="popup-backdrop" (click)="closePopup()">
+    <div class="popup-container" (click)="$event.stopPropagation()">
+      <button class="popup-close-btn" (click)="closePopup()">✕</button>
+      <div class="popup-header">
+        <div class="popup-icon-warning">⚠️</div>
+        <h3 class="popup-title">{{ popupTitle }}</h3>
+      </div>
+      <p class="popup-description">{{ popupDescription }}</p>
+
+      <div class="popup-link-box">
+        <span class="link-label">Link para acesso direto:</span>
+        <a [routerLink]="popupResetUrl" (click)="closePopup()" class="direct-reset-link">
+          {{ popupResetUrl }}
+        </a>
+      </div>
+
+      <div class="popup-actions">
+        <button type="button" class="btn-primary-action" (click)="closePopupAndNavigate()">
+          Ir para Página de Recuperação
+        </button>
+        <button type="button" class="btn-secondary-action" (click)="closePopup()">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Conteúdo Principal de Login / Esqueci minha Senha -->
   <div class="login-content">
+    <!-- Lado Esquerdo com Logo ou Ilustração do Cadeado -->
     <div class="left-brand">
       <img src="conecthus-logo.svg" alt="Conecthus Logo" class="brand-logo-large" />
     </div>
 
+    <!-- Lado Direito com Card do Formulário -->
     <div class="right-card">
+      @if (viewMode === 'login') {
+      <!-- TELA DE LOGIN PRINCIPAL -->
       <div class="card-inner">
         <h2>Bem-vindo!</h2>
         <p class="subtitle">Entre com sua conta</p>
 
         @if (errorMessage) {
-          <div class="error-alert">
-            {{ errorMessage }}
-          </div>
+        <div class="error-alert">
+          {{ errorMessage }}
+        </div>
         }
 
         <form (ngSubmit)="onSubmit()" class="login-form">
           <div class="form-group">
             <label for="login">E-mail ou Matrícula</label>
-            <input
-              type="text"
-              id="login"
-              name="login"
-              [(ngModel)]="loginInput"
-              placeholder="E-mail ou Nº matrícula"
-              required
-            />
+            <input type="text" id="login" name="login" [(ngModel)]="loginInput" placeholder="E-mail ou Nº matrícula"
+              required />
           </div>
 
           <div class="form-group">
-            <label for="password">Senha</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              [(ngModel)]="passwordInput"
-              placeholder="Senha"
-              required
-            />
+            <div class="label-row">
+              <label for="password">Senha</label>
+              <button type="button" class="forgot-link-btn" (click)="toggleViewMode('forgot')">
+                Esqueci minha senha
+              </button>
+            </div>
+            <input type="password" id="password" name="password" [(ngModel)]="passwordInput" placeholder="Senha"
+              required />
           </div>
 
           <button type="submit" class="submit-btn" [disabled]="isLoading">
             @if (!isLoading) {
-              <span>Entrar</span>
+            <span>Entrar</span>
             } @else {
-              <span class="spinner"></span>
+            <span class="spinner"></span>
             }
           </button>
         </form>
       </div>
+      } @else {
+      <!-- TELA DE RECUPERAÇÃO DE SENHA (SOLICITAÇÃO DE E-MAIL) -->
+      <div class="card-inner">
+
+        <h2 class="title-cyan">Recuperação de senha</h2>
+        <p class="subtitle">Insira seu e-mail para recuperar sua senha.</p>
+
+        @if (errorMessage) {
+        <div class="error-alert">
+          {{ errorMessage }}
+        </div>
+        }
+
+        <form (ngSubmit)="onForgotPasswordSubmit()" class="login-form">
+          <div class="form-group">
+            <label for="forgotEmail">E-mail</label>
+            <input type="email" id="forgotEmail" name="forgotEmail" [(ngModel)]="forgotEmailInput" placeholder="E-mail"
+              required />
+          </div>
+
+          <button type="submit" class="submit-btn-cyan" [disabled]="isLoading">
+            @if (!isLoading) {
+            <span>Recuperar</span>
+            } @else {
+            <span class="spinner"></span>
+            }
+          </button>
+
+          <div class="back-link-container">
+            <button type="button" class="back-link-btn" (click)="toggleViewMode('login')">
+              <span class="arrow">←</span> Voltar para o login
+            </button>
+          </div>
+        </form>
+      </div>
+      }
     </div>
   </div>
 </div>

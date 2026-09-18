@@ -59,6 +59,38 @@ export class AuthService {
   }
 
   /**
+   * Solicita a verificação de e-mail e geração de token de recuperação de senha.
+   * @param email E-mail do usuário.
+   * @returns Observable com objeto de resposta contendo a matrícula e o token/link.
+   */
+  public forgotPassword(email: string): Observable<{
+    message: string;
+    email: string;
+    registrationNumber: string;
+    token: string;
+    resetUrl: string;
+  }> {
+    return this.http.post<{
+      message: string;
+      email: string;
+      registrationNumber: string;
+      token: string;
+      resetUrl: string;
+    }>(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  /**
+   * Redefine a senha do usuário.
+   * @param login E-mail ou matrícula do usuário.
+   * @param token Token de recuperação.
+   * @param newPassword Nova senha.
+   * @returns Observable com a resposta do backend.
+   */
+  public resetPassword(login: string, token: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/reset-password`, { login, token, newPassword });
+  }
+
+  /**
    * Recupera o usuário salvo no localStorage caso existente.
    * @returns Objeto User ou null.
    */

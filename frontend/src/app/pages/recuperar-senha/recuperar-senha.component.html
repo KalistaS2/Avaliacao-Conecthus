@@ -1,0 +1,83 @@
+<div class="recovery-wrapper">
+  @if (notificationService.notification(); as notif) {
+  <app-notificacao [title]="notif.title" [message]="notif.message" [type]="notif.type"
+    (dismiss)="notificationService.dismiss()"></app-notificacao>
+  }
+
+  <div class="recovery-content">
+    <!-- Lado Esquerdo com Ilustração do Cadeado de Recuperação -->
+    <div class="left-brand">
+      <img src="conecthus-logo.svg" alt="Conecthus Logo" class="brand-logo-large" />
+    </div>
+
+    <!-- Lado Direito com Card de Formulário (Mesmo Layout do Login) -->
+    <div class="right-card">
+      <div class="card-inner">
+
+        <h2>Recuperação de senha</h2>
+        <p class="subtitle">
+          @if (registrationNumber) {
+          Defina sua nova senha para o usuário (Matrícula: <strong>{{ registrationNumber }}</strong>).
+          } @else {
+          Insira sua nova senha de acesso abaixo.
+          }
+        </p>
+
+        @if (errorMessage) {
+        <div class="error-alert">
+          {{ errorMessage }}
+        </div>
+        }
+
+        <form [formGroup]="resetForm" (ngSubmit)="onSubmit()" class="recovery-form">
+          <div class="form-group">
+            <label for="newPassword">Nova Senha</label>
+            <div class="input-password-wrapper">
+              <input [type]="showPassword ? 'text' : 'password'" id="newPassword" formControlName="newPassword"
+                placeholder="6 caracteres alfanuméricos" />
+              <button type="button" class="toggle-pwd-btn" (click)="toggleShowPassword()" title="Alternar visibilidade">
+                <span class="material-symbols-outlined">
+                  {{ showPassword ? 'visibility_off' : 'visibility' }}
+                </span>
+              </button>
+            </div>
+            @if (resetForm.get('newPassword')?.touched && resetForm.get('newPassword')?.invalid) {
+            <span class="field-error">deve conter 6 caracteres</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="repeatPassword">Confirmar Nova Senha</label>
+            <div class="input-password-wrapper">
+              <input [type]="showRepeatPassword ? 'text' : 'password'" id="repeatPassword"
+                formControlName="repeatPassword" placeholder="Repita a nova senha" />
+              <button type="button" class="toggle-pwd-btn" (click)="toggleShowRepeatPassword()"
+                title="Alternar visibilidade">
+                <span class="material-symbols-outlined">
+                  {{ showRepeatPassword ? 'visibility_off' : 'visibility' }}
+                </span>
+              </button>
+            </div>
+            @if (resetForm.get('repeatPassword')?.touched && resetForm.errors?.['passwordMismatch']) {
+            <span class="field-error">As senhas digitadas não coincidem.</span>
+            }
+          </div>
+
+          <button type="submit" class="submit-btn" [disabled]="isLoading || resetForm.invalid">
+            @if (!isLoading) {
+            <span>Redefinir Senha</span>
+            } @else {
+            <span class="spinner"></span>
+            }
+          </button>
+
+          <div class="back-link-container">
+            <a routerLink="/login" class="back-link">
+              <span class="arrow">←</span> Voltar para o login
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

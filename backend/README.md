@@ -32,11 +32,13 @@ backend/
 │       │   ├── create-user.dto.ts           # Validação para criação de usuário
 │       │   ├── update-user.dto.ts           # Validação parcial para atualização
 │       │   ├── login.dto.ts                 # Validação do formulário de autenticação
-│       │   ├── auth-response.dto.ts         # DTO para documentação da resposta de login no Swagger
+│       │   ├── forgot-password.dto.ts       # Validação para solicitação de recuperação de senha
+│       │   ├── reset-password.dto.ts        # Validação para redefinição de senha com token
+│       │   ├── auth-response.dto.ts         # DTO para resposta de login no Swagger
 │       │   └── paginated-users.dto.ts       # DTO para resposta paginada no Swagger
 │       ├── entities/
 │       │   └── user.entity.ts               # Entidade TypeORM que define a tabela 'users'
-│       ├── users.controller.ts              # Controladores REST (/users e /auth/login)
+│       ├── users.controller.ts              # Controladores REST (/users e /auth/*)
 │       ├── users.module.ts                  # Módulo contendo a injeção de dependências de usuários
 │       └── users.service.ts                 # Regras de negócio, hashing, seed automático e persistência
 ├── Dockerfile                   # Build multi-estágio em Node.js (Alpine)
@@ -69,7 +71,7 @@ A API possui documentação OpenAPI interativa e automatizada via **Swagger UI**
 👉 **[http://localhost:3000/api/docs](http://localhost:3000/api/docs)**
 
 No Swagger UI você encontra:
-- **Schemas e DTOs detalhados**: `CreateUserDto`, `UpdateUserDto`, `LoginDto`, `AuthResponseDto`, `PaginatedUsersResponseDto` e `User`.
+- **Schemas e DTOs detalhados**: `CreateUserDto`, `UpdateUserDto`, `LoginDto`, `ForgotPasswordDto`, `ResetPasswordDto`, `AuthResponseDto`, `PaginatedUsersResponseDto` e `User`.
 - **Exemplos de Payload de requisição e resposta**.
 - **Códigos de Status HTTP**: 200, 201, 400 (Bad Request), 401 (Unauthorized), 409 (Conflict - E-mail/Matrícula duplicados) e 404 (Not Found).
 - **Interface interativa para testar as requisições diretamente do navegador**.
@@ -81,11 +83,21 @@ No Swagger UI você encontra:
 ### 🔹 Status / Healthcheck (`Status`)
 - `GET /` - Retorna a confirmação de que o servidor backend está operacional.
 
-### 🔹 Autenticação (`/auth`)
+### 🔹 Autenticação e Recuperação (`/auth`)
 - `POST /auth/login`
   - **Descrição**: Autentica o usuário no sistema por **E-mail** ou **Matrícula** e **Senha**.
   - **Body**: `{ "login": "userteste@hotmail.com", "password": "senha123" }`
   - **Retorno**: Objeto contendo o perfil do usuário (sem a senha) e o token de acesso.
+
+- `POST /auth/forgot-password`
+  - **Descrição**: Solicita a recuperação de senha verificando se o e-mail informado existe no banco.
+  - **Body**: `{ "email": "userteste@hotmail.com" }`
+  - **Retorno**: `{ "message": "...", "registrationNumber": "1234", "token": "...", "resetUrl": "..." }`
+
+- `POST /auth/reset-password`
+  - **Descrição**: Redefine a senha do usuário com validação de nova senha (alfanumérico min 6 caracteres) e hash bcrypt.
+  - **Body**: `{ "login": "userteste@hotmail.com", "token": "...", "newPassword": "novaSenha123" }`
+  - **Retorno**: `{ "message": "Senha redefinida com sucesso." }`
 
 ### 🔹 Usuários (`/users`)
 - `POST /users`

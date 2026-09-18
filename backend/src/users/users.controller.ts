@@ -4,6 +4,8 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { PaginatedUsersResponseDto } from './dto/paginated-users.dto';
 import { User } from './entities/user.entity';
@@ -31,6 +33,33 @@ export class UsersController {
   @ApiResponse({ status: 401, description: 'Credenciais inválidas.' })
   async login(@Body() loginDto: LoginDto): Promise<{ user: Partial<User>; token: string }> {
     return await this.usersService.login(loginDto);
+  }
+
+  /**
+   * Solicita a recuperação de senha verificando se o e-mail existe no sistema.
+   * @param forgotPasswordDto E-mail para verificação.
+   * @returns Retorna a confirmação com o token e dados para acesso à tela de redefinição.
+   */
+  @Post('auth/forgot-password')
+  @ApiOperation({ summary: 'Solicitar recuperação de senha', description: 'Verifica se o e-mail está cadastrado e gera o link/token de recuperação.' })
+  @ApiResponse({ status: 200, description: 'Solicitação de recuperação processada com sucesso.' })
+  @ApiResponse({ status: 404, description: 'Nenhum usuário encontrado com o e-mail informado.' })
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return await this.usersService.forgotPassword(forgotPasswordDto);
+  }
+
+  /**
+   * Redefine a senha do usuário no banco de dados.
+   * @param resetPasswordDto Identificador, token e nova senha.
+   * @returns Retorna mensagem de confirmação da alteração.
+   */
+  @Post('auth/reset-password')
+  @ApiOperation({ summary: 'Redefinir senha do usuário', description: 'Atualiza a senha do usuário via token de recuperação com validação dos critérios alfanuméricos.' })
+  @ApiResponse({ status: 200, description: 'Senha redefinida com sucesso.' })
+  @ApiResponse({ status: 400, description: 'Nova senha fora dos critérios de validação.' })
+  @ApiResponse({ status: 404, description: 'Usuário não localizado.' })
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return await this.usersService.resetPassword(resetPasswordDto);
   }
 
   /**

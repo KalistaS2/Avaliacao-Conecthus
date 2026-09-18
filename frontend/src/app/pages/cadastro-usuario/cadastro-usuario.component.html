@@ -94,11 +94,8 @@
               @if (userForm.get('password')?.hasError('required') && userForm.get('password')?.touched) {
               <span class="error-text">A senha é obrigatória.</span>
               }
-              @if (userForm.get('password')?.hasError('minlength') && userForm.get('password')?.touched && !userForm.get('password')?.hasError('required')) {
-              <span class="error-text">A senha deve ter no mínimo 6 dígitos.</span>
-              }
-              @if (userForm.get('password')?.hasError('pattern') && userForm.get('password')?.touched && !userForm.get('password')?.hasError('minlength')) {
-              <span class="error-text">A senha deve ser alfanumérica.</span>
+              @if ((userForm.get('password')?.hasError('minlength') || userForm.get('password')?.hasError('maxlength') || userForm.get('password')?.hasError('pattern')) && userForm.get('password')?.touched && !userForm.get('password')?.hasError('required')) {
+              <span class="error-text">A senha deve conter 6 caracteres.</span>
               }
             </div>
 

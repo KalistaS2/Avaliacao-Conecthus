@@ -1,6 +1,6 @@
 # Sistema CRUD Avaliação Conecthus (Monorepo)
 
-Sistema Full Stack completo para gerenciamento de usuários e autenticação (**Conecthus**), englobando backend em **NestJS**, frontend em **Angular 19** e infraestrutura containerizada com **Docker Compose** e **PostgreSQL**.
+Sistema Full Stack completo para gerenciamento de usuários e autenticação, englobando backend em **NestJS**, frontend em **Angular 19** e infraestrutura containerizada com **Docker Compose** e **PostgreSQL**.
 
 ---
 
@@ -11,7 +11,7 @@ O projeto é estruturado no formato de Monorepo organizado em dois diretórios p
 ```text
 Avaliacao-Conecthus/
 ├── backend/                  # Aplicação Backend NestJS (API RESTful + Swagger UI + TypeORM + PostgreSQL)
-├── frontend/                 # Aplicação Frontend Angular 19 (SPA Modular com Header, Sidebar, Signals e Guards)
+├── frontend/                 # Aplicação Frontend Angular 19 (SPA Modular com Header, Sidebar, Signals, Login & Recuperar Senha)
 ├── docker-compose.yml        # Orquestração dos contêineres Docker (Frontend/NGINX, Backend NestJS e Postgres)
 └── README.md                 # Documentação principal da raiz do monorepo
 ```

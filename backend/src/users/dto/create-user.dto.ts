@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsEmail, Matches, MinLength } from 'class-validator';
+import { IsNotEmpty, IsEmail, Matches, MinLength, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 /**
@@ -20,9 +20,10 @@ export class CreateUserDto {
   @Matches(/^\d+$/, { message: 'A matrícula deve conter apenas números.' })
   registrationNumber!: string;
 
-  @ApiProperty({ description: 'Senha alfanumérica (Mínimo 6 dígitos)', example: 'senha123' })
+  @ApiProperty({ description: 'Senha alfanumérica de exatos 6 caracteres', example: 'senha1' })
   @IsNotEmpty({ message: 'O campo Senha é obrigatório.' })
-  @MinLength(6, { message: 'A senha deve conter no mínimo 6 dígitos.' })
-  @Matches(/^[a-zA-Z0-9]+$/, { message: 'A senha deve ser alfanumérica.' })
+  @MinLength(6, { message: 'deve conter 6 caracteres' })
+  @MaxLength(6, { message: 'deve conter 6 caracteres' })
+  @Matches(/^[a-zA-Z0-9]{6}$/, { message: 'deve conter 6 caracteres' })
   password!: string;
 }

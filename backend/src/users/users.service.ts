@@ -6,6 +6,8 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 /**
  * Serviço responsável pelo gerenciamento de usuários e regras de negócio.
@@ -214,5 +216,63 @@ export class UsersService implements OnApplicationBootstrap {
       user: userWithoutPassword,
       token: `fake-jwt-token-conecthus-${user.id}-${Date.now()}`,
     };
+  }
+
+  /**
+   * Processa a solicitação de esquecimento de senha verificando se o e-mail existe no banco.
+   * @param forgotPasswordDto Contém o e-mail do usuário.
+   * @returns Objeto com dados de confirmação, matrícula e o token/link gerado.
+   */
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{
+    message: string;
+    email: string;
+    registrationNumber: string;
+    token: string;
+    resetUrl: string;
+  }> {
+    const user = await this.userRepository.findOne({
+      where: { email: forgotPasswordDto.email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Nenhum usuário foi encontrado com o e-mail informado.');
+    }
+
+    const token = `reset-token-conecthus-${user.id}-${Date.now()}`;
+    const resetUrl = `/recuperar-senha?token=${token}&login=${encodeURIComponent(user.email)}&registrationNumber=${encodeURIComponent(user.registrationNumber)}`;
+
+    return {
+      message: 'Solicitação de recuperação processada com sucesso.',
+      email: user.email,
+      registrationNumber: user.registrationNumber,
+      token,
+      resetUrl,
+    };
+  }
+
+  /**
+   * Executa a redefinição de senha do usuário no banco de dados.
+   * @param resetPasswordDto Contém o identificador, token e a nova senha.
+   * @returns Mensagem de sucesso da redefinição.
+   */
+  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
+    const { login, newPassword } = resetPasswordDto;
+
+    const user = await this.userRepository.findOne({
+      where: [
+        { email: login },
+        { registrationNumber: login },
+      ],
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não localizado para redefinição de senha.');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await this.userRepository.save(user);
+
+    return { message: 'Senha redefinida com sucesso. Faça login com sua nova senha.' };
   }
 }
