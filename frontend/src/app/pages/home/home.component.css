@@ -1,0 +1,96 @@
+.page-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f1f5f9;
+}
+
+.main-content {
+  margin-left: 260px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-content.collapsed {
+  margin-left: 80px;
+}
+
+.page-header {
+  background-color: #0b192c;
+  color: #ffffff;
+  padding: 1.25rem 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.content-body {
+  padding: 2rem;
+  flex: 1;
+}
+
+.welcome-header {
+  margin-bottom: 2rem;
+}
+
+.welcome-header h2 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.date-badge {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.welcome-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  text-align: center;
+}
+
+.card-illustration {
+  width: 220px;
+  margin-bottom: 1.5rem;
+}
+
+.card-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.banner-text {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.action-link {
+  color: #00adb5;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.action-link:hover {
+  color: #00888f;
+  text-decoration: underline;
+}

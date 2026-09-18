@@ -1,0 +1,12 @@
+@if (isOpen) {
+  <div class="confirm-overlay" (click)="onCancel()">
+    <div class="confirm-card" (click)="$event.stopPropagation()">
+      <h3 class="confirm-title">{{ title }}</h3>
+      <p class="confirm-description">{{ description }}</p>
+      <div class="confirm-actions">
+        <button class="btn-no" (click)="onCancel()">Não</button>
+        <button class="btn-yes" (click)="onConfirm()">Sim</button>
+      </div>
+    </div>
+  </div>
+}

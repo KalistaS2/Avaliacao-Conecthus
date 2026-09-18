@@ -1,0 +1,153 @@
+<div class="page-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content" [class.collapsed]="sidebarService.isCollapsed()">
+    <header class="page-header">
+      <div class="breadcrumb">
+        <a routerLink="/usuarios" class="breadcrumb-link">Usuários</a>
+        <span class="breadcrumb-separator">&gt;</span>
+        <span class="breadcrumb-current">{{ isEditMode ? 'Editar Usuário' : 'Cadastro de Usuário' }}</span>
+      </div>
+
+      <a routerLink="/usuarios" class="btn-back" title="Voltar para Usuários">
+        Voltar
+      </a>
+    </header>
+
+    <div class="content-body">
+      <div class="form-card">
+        <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="user-form">
+          <!-- Seção 1: Dados do Usuário -->
+          <div class="section-header">
+            <span class="section-title">Dados do Usuário</span>
+            <div class="section-line"></div>
+          </div>
+
+          <div class="form-row-2col">
+            <!-- Campo Nome Completo -->
+            <div class="form-group">
+              <label for="name">Insira o nome completo*</label>
+              <input type="text" id="name" formControlName="name" placeholder="Insira o nome completo"
+                [class.invalid]="userForm.get('name')?.invalid && userForm.get('name')?.touched" />
+              @if (userForm.get('name')?.hasError('required') && userForm.get('name')?.touched) {
+              <span class="error-text">O nome é obrigatório.</span>
+              }
+              @if (userForm.get('name')?.hasError('pattern') && userForm.get('name')?.touched) {
+              <span class="error-text">O nome deve conter apenas letras.</span>
+              }
+            </div>
+
+            <!-- Campo Matrícula -->
+            <div class="form-group">
+              <label for="registrationNumber">Insira o nº da matrícula*</label>
+              <input type="text" id="registrationNumber" formControlName="registrationNumber"
+                placeholder="Insira o nº da matrícula"
+                [class.invalid]="userForm.get('registrationNumber')?.invalid && userForm.get('registrationNumber')?.touched" />
+              @if (userForm.get('registrationNumber')?.hasError('required') &&
+              userForm.get('registrationNumber')?.touched) {
+              <span class="error-text">A matrícula é obrigatória.</span>
+              }
+              @if (userForm.get('registrationNumber')?.hasError('pattern') &&
+              userForm.get('registrationNumber')?.touched) {
+              <span class="error-text">A matrícula deve conter apenas números.</span>
+              }
+            </div>
+          </div>
+
+          <!-- Campo E-mail -->
+          <div class="form-row-1col">
+            <div class="form-group">
+              <label for="email">E-mail*</label>
+              <input type="email" id="email" formControlName="email" placeholder="nome.sobrenome@conecthus.com.br"
+                [class.invalid]="userForm.get('email')?.invalid && userForm.get('email')?.touched" />
+              @if (userForm.get('email')?.hasError('required') && userForm.get('email')?.touched) {
+              <span class="error-text">O e-mail é obrigatório.</span>
+              }
+              @if (userForm.get('email')?.hasError('email') && userForm.get('email')?.touched) {
+              <span class="error-text">Insira um endereço de e-mail válido.</span>
+              }
+            </div>
+          </div>
+
+          <!-- Seção 2: Dados de Acesso -->
+          <div class="section-header">
+            <span class="section-title">Dados de acesso</span>
+            <div class="section-line"></div>
+          </div>
+
+          <div class="form-row-2col">
+            <!-- Campo Senha -->
+            <div class="form-group">
+              <label for="password">Senha*</label>
+              <div class="password-input-wrapper">
+                <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
+                  placeholder="••••••••••••"
+                  [class.invalid]="userForm.get('password')?.invalid && userForm.get('password')?.touched" />
+                <button type="button" class="eye-btn" (click)="toggleShowPassword()" title="Alternar visibilidade">
+                  <span class="material-symbols-outlined">
+                    {{ showPassword ? 'visibility_off' : 'visibility' }}
+                  </span>
+                </button>
+              </div>
+              @if (userForm.get('password')?.hasError('required') && userForm.get('password')?.touched) {
+              <span class="error-text">A senha é obrigatória.</span>
+              }
+              @if (userForm.get('password')?.hasError('minlength') && userForm.get('password')?.touched && !userForm.get('password')?.hasError('required')) {
+              <span class="error-text">A senha deve ter no mínimo 6 dígitos.</span>
+              }
+              @if (userForm.get('password')?.hasError('pattern') && userForm.get('password')?.touched && !userForm.get('password')?.hasError('minlength')) {
+              <span class="error-text">A senha deve ser alfanumérica.</span>
+              }
+            </div>
+
+            <!-- Campo Repetir Senha -->
+            <div class="form-group">
+              <label for="repeatPassword">Repetir Senha*</label>
+              <div class="password-input-wrapper">
+                <input [type]="showRepeatPassword ? 'text' : 'password'" id="repeatPassword"
+                  formControlName="repeatPassword" placeholder="••••••••••••"
+                  [class.invalid]="(userForm.get('repeatPassword')?.invalid || userForm.hasError('passwordMismatch')) && userForm.get('repeatPassword')?.touched" />
+                <button type="button" class="eye-btn" (click)="toggleShowRepeatPassword()"
+                  title="Alternar visibilidade">
+                  <span class="material-symbols-outlined">
+                    {{ showRepeatPassword ? 'visibility_off' : 'visibility' }}
+                  </span>
+                </button>
+              </div>
+              @if (userForm.get('repeatPassword')?.hasError('required') && userForm.get('repeatPassword')?.touched) {
+              <span class="error-text">A confirmação de senha é obrigatória.</span>
+              }
+              @if (userForm.hasError('passwordMismatch') && userForm.get('repeatPassword')?.touched &&
+              !userForm.get('repeatPassword')?.hasError('required')) {
+              <span class="error-text">As senhas não coincidem.</span>
+              }
+            </div>
+          </div>
+
+          <!-- Rodapé do formulário com botões de ação -->
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" (click)="openCancelModal()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-submit" [disabled]="userForm.invalid || isLoading">
+              @if (!isLoading) {
+              <span>{{ isEditMode ? 'Salvar' : 'Cadastrar' }}</span>
+              } @else {
+              <span class="spinner"></span>
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal Popup de Confirmação de Cancelamento -->
+<app-popup-confirmacao [isOpen]="isCancelModalOpen" title="Deseja cancelar?"
+  description="Os dados inseridos não serão salvos" (cancel)="dismissCancelModal()"
+  (confirm)="confirmCancel()"></app-popup-confirmacao>
+
+<!-- Toast de Notificação -->
+<app-notificacao [title]="notificationTitle" [message]="notificationMessage" [type]="notificationType"
+  (dismiss)="notificationMessage = ''"></app-notificacao>

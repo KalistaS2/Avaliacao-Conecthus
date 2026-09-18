@@ -1,0 +1,21 @@
+@if (message) {
+  <div class="toast-container" [ngClass]="type">
+    <div class="toast-content">
+      <span class="material-symbols-outlined toast-icon">
+        @if (type === 'success') { check_circle }
+        @else if (type === 'error') { cancel }
+        @else if (type === 'warning') { warning }
+        @else { info }
+      </span>
+      <div class="toast-body">
+        @if (title) {
+          <span class="toast-title">{{ title }}</span>
+        }
+        <span class="toast-message">{{ message }}</span>
+      </div>
+    </div>
+    <button class="toast-close" (click)="onDismiss()" title="Fechar">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+}

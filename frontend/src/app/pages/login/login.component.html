@@ -1,0 +1,69 @@
+<div class="login-wrapper">
+  <app-notificacao
+    [title]="notificationTitle"
+    [message]="notificationMessage"
+    [type]="notificationType"
+    (dismiss)="notificationMessage = ''"
+  ></app-notificacao>
+
+  @if (isSplashVisible) {
+    <!-- Tela de apresentação (Splash Screen) -->
+    <div class="splash-screen" (click)="toggleSplash()">
+      <img src="conecthus-logo.svg" alt="Conecthus Logo" class="splash-logo" />
+    </div>
+  } @else {
+    <!-- Tela de Login Principal -->
+    <div class="login-content">
+      <div class="left-brand">
+        <img src="conecthus-logo.svg" alt="Conecthus Logo" class="brand-logo-large" />
+      </div>
+
+      <div class="right-card">
+        <div class="card-inner">
+          <h2>Bem-vindo!</h2>
+          <p class="subtitle">Entre com sua conta</p>
+
+          @if (errorMessage) {
+            <div class="error-alert">
+              {{ errorMessage }}
+            </div>
+          }
+
+          <form (ngSubmit)="onSubmit()" class="login-form">
+            <div class="form-group">
+              <label for="login">E-mail ou Matrícula</label>
+              <input
+                type="text"
+                id="login"
+                name="login"
+                [(ngModel)]="loginInput"
+                placeholder="Digite seu e-mail ou matrícula"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="password">Senha</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                [(ngModel)]="passwordInput"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            <button type="submit" class="submit-btn" [disabled]="isLoading">
+              @if (!isLoading) {
+                <span>Entrar</span>
+              } @else {
+                <span class="spinner"></span>
+              }
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+</div>

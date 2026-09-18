@@ -1,0 +1,40 @@
+<div class="page-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content" [class.collapsed]="sidebarService.isCollapsed()">
+    <header class="page-header">
+      <h1 class="page-title">Home</h1>
+    </header>
+
+    <div class="content-body">
+      <div class="welcome-header">
+        <h2>Olá {{ getUserFirstName() }}!</h2>
+        <span class="date-badge">{{ currentDate }}</span>
+      </div>
+
+      <div class="welcome-card">
+        <div class="card-illustration">
+          <svg viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="150" rx="12" fill="#E2F1F8"/>
+            <circle cx="100" cy="60" r="35" fill="#00ADB5" opacity="0.2"/>
+            <path d="M70 95C70 81.1929 81.1929 70 95 70H105C118.807 70 130 81.1929 130 95V110H70V95Z" fill="#0b192c"/>
+            <circle cx="100" cy="50" r="18" fill="#00ADB5"/>
+            <path d="M135 40L145 30M150 55L162 55M140 70L152 78" stroke="#00ADB5" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card-banner">
+          <p class="banner-text">Bem-vindo ao Conecthus!</p>
+          <a routerLink="/usuarios" class="action-link">Ir para Gerenciamento de Usuários &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast de Notificação -->
+<app-notificacao
+  [title]="notificationTitle"
+  [message]="notificationMessage"
+  [type]="notificationType"
+  (dismiss)="notificationMessage = ''"
+></app-notificacao>

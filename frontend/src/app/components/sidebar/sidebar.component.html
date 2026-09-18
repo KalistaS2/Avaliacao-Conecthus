@@ -1,0 +1,56 @@
+<aside class="sidebar-container" [class.collapsed]="sidebarService.isCollapsed()">
+  <!-- Botão circular de alternância (Toggle Expandir/Recolher) na borda -->
+  <button class="toggle-btn" (click)="toggleSidebar()" [attr.aria-label]="sidebarService.isCollapsed() ? 'Expandir menu' : 'Recolher menu'">
+    <span class="material-symbols-outlined toggle-icon">
+      {{ sidebarService.isCollapsed() ? 'chevron_right' : 'chevron_left' }}
+    </span>
+  </button>
+
+  <div class="brand">
+    @if (showFullLogo && !sidebarService.isCollapsed()) {
+      <img src="conecthus-logo.svg" alt="Conecthus Logo" class="brand-logo" />
+    } @else {
+      <img src="conecthus-icon.svg" alt="Conecthus Icon" class="brand-icon" />
+    }
+  </div>
+
+  <nav class="nav-menu">
+    <a routerLink="/home" routerLinkActive="active" class="nav-item" [attr.title]="sidebarService.isCollapsed() ? 'Home' : null">
+      <span class="material-symbols-outlined icon">home</span>
+      @if (!sidebarService.isCollapsed()) {
+        <span>Home</span>
+      }
+    </a>
+
+    @if (!sidebarService.isCollapsed()) {
+      <div class="nav-section-label">Controle de Acesso</div>
+    }
+
+    <a routerLink="/usuarios" routerLinkActive="active" class="nav-item" [attr.title]="sidebarService.isCollapsed() ? 'Usuários' : null">
+      <span class="material-symbols-outlined icon">person</span>
+      @if (!sidebarService.isCollapsed()) {
+        <span>Usuários</span>
+      }
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    @if (authService.currentUser(); as user) {
+      <div class="user-info" [attr.title]="sidebarService.isCollapsed() ? user.name + ' (' + user.email + ')' : null">
+        <div class="avatar">{{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}</div>
+        @if (!sidebarService.isCollapsed()) {
+          <div class="user-details">
+            <span class="user-name">{{ user.name }}</span>
+            <span class="user-email">{{ user.email }}</span>
+          </div>
+        }
+      </div>
+    }
+    <button (click)="onLogout()" class="logout-btn" [attr.title]="sidebarService.isCollapsed() ? 'Sair do sistema' : null">
+      <span class="material-symbols-outlined icon">logout</span>
+      @if (!sidebarService.isCollapsed()) {
+        <span>Sair</span>
+      }
+    </button>
+  </div>
+</aside>

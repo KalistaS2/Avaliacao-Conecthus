@@ -1,0 +1,235 @@
+<div class="page-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content" [class.collapsed]="sidebarService.isCollapsed()">
+    <header class="page-header">
+      <h1 class="page-title">Usuários</h1>
+    </header>
+
+    <div class="content-body">
+      <!-- Barra superior de ações (Busca e Botão Cadastrar) -->
+      <div class="actions-bar">
+        <div class="search-box">
+          <span class="material-symbols-outlined search-icon">search</span>
+          <input
+            type="text"
+            placeholder="Pesquisa"
+            [(ngModel)]="searchTerm"
+            (input)="onSearch()"
+          />
+        </div>
+
+        <a routerLink="/cadastro-usuario" class="btn-create">
+          <span>+ Cadastrar Usuário</span>
+        </a>
+      </div>
+
+      <!-- Lista de Usuários em Cards -->
+      @if (users.length > 0 && !isLoading) {
+        <div class="users-list-container">
+          <!-- Cabeçalho da Lista -->
+          <div class="list-header">
+            <span class="header-col-name">Nome</span>
+            <span class="header-col-actions">Ações</span>
+          </div>
+
+          <!-- Cards de Usuários -->
+          <div class="cards-list">
+            @for (user of users; track user.id) {
+              <div class="user-card">
+                <span class="user-name">{{ user.name }}</span>
+                <div class="actions-cell">
+                  <!-- Botão Visualizar -->
+                  <button (click)="viewUserDetails(user)" class="icon-btn view-btn" title="Visualizar Detalhes">
+                    <span class="material-symbols-outlined">visibility</span>
+                  </button>
+                  <!-- Botão Editar -->
+                  <button (click)="editUser(user)" class="icon-btn edit-btn" title="Editar Usuário">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <!-- Botão Excluir -->
+                  <button (click)="openDeleteModal(user)" class="icon-btn delete-btn" title="Excluir Usuário">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Estado: Nenhum Resultado Encontrado (Empty State) -->
+      @if (users.length === 0 && !isLoading) {
+        <div class="empty-state-card">
+          <div class="empty-illustration">
+            <div class="magnifier-circle">
+              <span class="material-symbols-outlined empty-icon">search_off</span>
+            </div>
+          </div>
+          <h3 class="empty-title">Nenhum Resultado Encontrado</h3>
+          <p class="empty-description">Não foi possível encontrar nenhum resultado para a sua busca. Tente buscar utilizando outro nome ou cadastre um novo usuário.</p>
+        </div>
+      }
+
+      <!-- Skeleton Loader -->
+      @if (isLoading) {
+        <div class="skeleton-container">
+          <div class="skeleton-header">
+            <div class="skeleton-bar skeleton-title-bar"></div>
+            <div class="skeleton-bar skeleton-action-bar"></div>
+          </div>
+          <div class="skeleton-cards">
+            @for (item of [1, 2, 3, 4, 5]; track item) {
+              <div class="skeleton-card">
+                <div class="skeleton-bar skeleton-name"></div>
+                <div class="skeleton-actions">
+                  <div class="skeleton-circle"></div>
+                  <div class="skeleton-circle"></div>
+                  <div class="skeleton-circle"></div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Controles de Paginação no Fim da Página -->
+      @if (!isLoading) {
+        <div class="pagination-footer">
+          <div class="pagination-total">
+            Total de itens <strong>{{ totalUsers }}</strong>
+          </div>
+
+          <div class="pagination-controls">
+            <div class="items-per-page-box">
+              <span class="items-per-page-label">Itens por página</span>
+              <select
+                [(ngModel)]="pageSize"
+                (change)="onPageSizeChange()"
+                class="page-size-select"
+              >
+                <option [ngValue]="5">5</option>
+                <option [ngValue]="10">10</option>
+                <option [ngValue]="20">20</option>
+                <option [ngValue]="50">50</option>
+                <option [ngValue]="100">100</option>
+              </select>
+            </div>
+
+            <div class="nav-buttons">
+              <!-- Primeira página -->
+              <button
+                [disabled]="currentPage === 1"
+                (click)="changePage(1)"
+                class="nav-btn"
+                title="Primeira página"
+              >
+                <span class="material-symbols-outlined">first_page</span>
+              </button>
+
+              <!-- Página anterior -->
+              <button
+                [disabled]="currentPage === 1"
+                (click)="changePage(currentPage - 1)"
+                class="nav-btn"
+                title="Página anterior"
+              >
+                <span class="material-symbols-outlined">chevron_left</span>
+              </button>
+
+              <!-- Número da página atual -->
+              <span class="active-page-num">{{ currentPage }}</span>
+
+              <!-- Próxima página -->
+              <button
+                [disabled]="currentPage === totalPages"
+                (click)="changePage(currentPage + 1)"
+                class="nav-btn"
+                title="Próxima página"
+              >
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
+
+              <!-- Última página -->
+              <button
+                [disabled]="currentPage === totalPages"
+                (click)="changePage(totalPages)"
+                class="nav-btn"
+                title="Última página"
+              >
+                <span class="material-symbols-outlined">last_page</span>
+              </button>
+            </div>
+
+            <span class="total-pages-text">de {{ totalPages }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </main>
+</div>
+
+<!-- Modal Popup de Visualizar Usuário -->
+<app-popup [isOpen]="isDetailModalOpen" title="Visualizar Usuário" (close)="closeDetailModal()">
+  @if (selectedUser) {
+    <div class="view-user-modal">
+      <!-- Seção 1: Dados do Usuário -->
+      <div class="section-header">
+        <span class="section-title">Dados do Usuário</span>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="view-row">
+        <div class="field-box">
+          <span class="field-label">Nome</span>
+          <span class="field-value">{{ selectedUser.name }}</span>
+        </div>
+        <div class="field-box">
+          <span class="field-label">Matricula</span>
+          <span class="field-value">{{ selectedUser.registrationNumber }}</span>
+        </div>
+      </div>
+
+      <div class="view-row single-field">
+        <div class="field-box">
+          <span class="field-label">E-mail</span>
+          <span class="field-value">{{ selectedUser.email }}</span>
+        </div>
+      </div>
+
+      <!-- Seção 2: Detalhes -->
+      <div class="section-header">
+        <span class="section-title">Detalhes</span>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="view-row">
+        <div class="field-box">
+          <span class="field-label">Data de criação</span>
+          <span class="field-value">{{ formatDate(selectedUser.createdAt) }}</span>
+        </div>
+        <div class="field-box">
+          <span class="field-label">Última edição</span>
+          <span class="field-value">{{ formatUpdateDate(selectedUser.createdAt, selectedUser.updatedAt) }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</app-popup>
+
+<!-- Modal Popup de Confirmação de Exclusão -->
+<app-popup-confirmacao
+  [isOpen]="isDeleteModalOpen"
+  [title]="getDeleteModalTitle()"
+  [description]="getDeleteModalDescription()"
+  (cancel)="cancelDelete()"
+  (confirm)="confirmDelete()"
+></app-popup-confirmacao>
+
+<!-- Toast de Notificação -->
+<app-notificacao
+  [title]="notificationTitle"
+  [message]="notificationMessage"
+  [type]="notificationType"
+  (dismiss)="notificationMessage = ''"
+></app-notificacao>
